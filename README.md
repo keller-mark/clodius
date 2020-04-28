@@ -41,6 +41,7 @@ The output files can then be displayed using the [higlass-docker container](http
   - [Gene Annotation](docs/genomic/gene-annotation.rst)
   - [HiTile Files](docs/genomic/hitile.rst)
   - [Multivec Files](docs/genomic/multivec.rst)
+  - [Fasta Files](docs/genomic/fasta.rst)
 
 ## Development
 

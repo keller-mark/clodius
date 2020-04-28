@@ -22,6 +22,7 @@ import sys
 import time
 import gzip
 import json
+import pyfastx
 
 from .utils import get_tile_pos_from_lng_lat
 
@@ -174,6 +175,43 @@ def _multivec(
         tile_size=tile_size,
         output_file=output_file,
         row_infos=row_infos,
+    )
+
+
+def _fasta(
+    filepath,
+    output_file,
+    assembly,
+    tile_size,
+    chromsizes_filename,
+    starting_resolution,
+    method
+):
+    """
+    Aggregate a fasta file.
+
+    Example: f['chr1']['reslutions']['1000'] = [[1,2,3],[4,5,6]]
+
+    The resulting data will be organized by resolution and chromosome.
+
+    Aggregation is currently done by summing adjacent values.
+    """
+    f_in = pyfastx.Fasta(filepath)
+
+    if output_file is None:
+        output_file = op.splitext(filepath)[0] + ".multires.mv5"
+
+    (chrom_info, chrom_names, chrom_sizes) = cch.load_chromsizes(
+        chromsizes_filename, assembly
+    )
+
+    cfa.create_fasta_multires(
+        f_in,
+        chromsizes=zip(chrom_names, chrom_sizes),
+        method=method,
+        starting_resolution=starting_resolution,
+        tile_size=tile_size,
+        output_file=output_file
     )
 
 
@@ -1684,3 +1722,65 @@ def multivec(
 def geojson(filepath, output_file, max_per_tile, tile_size, max_zoom):
     """Aggregate a geojson file"""
     _geojson(filepath, output_file, max_per_tile, tile_size, max_zoom)
+
+
+@aggregate.command()
+@click.argument("filepath", metavar="FILEPATH")
+@click.option(
+    "-o",
+    "--output-file",
+    default=None,
+    help="The default output file name to use. If this isn't"
+    "specified, clodius will replace the current extension"
+    "with .gjdb",
+)
+@click.option(
+    "-a",
+    "--assembly",
+    default=None,
+    help="The assembly that this data comes from. This parameter is"
+    "unnecessary and/or overwritten if --chromsizes-filename is specified",
+)
+@click.option(
+    "-s",
+    "--tile-size",
+    default=256,
+    help="The number of nucleotides that the highest resolution tiles "
+    "should span. This determines the maximum zoom level",
+)
+@click.option(
+    "-c",
+    "--chromsizes-filename",
+    default=None,
+    help="The file containnig chromosome sizes and order",
+)
+@click.option(
+    "--starting-resolution",
+    default=256,
+    help="The resolution that the starting data is at (e.g. 1, 10, 20)",
+)
+@click.option(
+    "--method",
+    help="The method used to aggregate values (e.g. sum, average...)",
+    type=click.Choice(["sum", "logsumexp"]),
+    default="sum",
+)
+def fasta(
+    filepath,
+    output_file,
+    assembly,
+    tile_size,
+    chromsizes_filename,
+    starting_resolution,
+    method
+):
+    """Aggregate a fasta file"""
+    _fasta(
+        filepath,
+        output_file,
+        assembly,
+        tile_size,
+        chromsizes_filename,
+        starting_resolution,
+        method
+    )
