@@ -1,0 +1,27 @@
+name: clodius
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python>=3.6
+  - pysam==0.16.0.1
+  - dask
+  - requests==2.20.0
+  - h5py==2.6.0
+  - sortedcontainers
+  - nose
+  - Click>=7
+  - flake8
+  - pytest
+  - pytest-cov
+  - autopep8
+  - pip
+  - pip:
+    - pybbi==0.2.2
+    - negspy
+    - cooler==0.8.6
+    - slugid==2.0.0
+    - bumpversion==0.5.3
+    - numpy==1.17.3
+    - pandas==0.23.4

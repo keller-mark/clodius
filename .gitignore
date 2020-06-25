@@ -35,6 +35,7 @@ htmlcov/
 ehthumbs.db
 Thumbs.db
 
+.envrc
 .ipynb_checkpoints/
 .idea/
 old
