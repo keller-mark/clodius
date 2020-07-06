@@ -9,6 +9,7 @@ dependencies:
   - dask
   - requests==2.20.0
   - h5py==2.6.0
+  - zarr==2.4.0
   - sortedcontainers
   - nose
   - Click>=7
